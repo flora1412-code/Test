@@ -1,0 +1,40 @@
+qa_validations:
+  public.trades:
+    validate_columns:
+      - login_hash:
+          data_type: text
+          is_null: false
+      - ticket_hash:
+          data_type: text
+          is_unique: true
+          is_null: false
+      - digits:
+          data_type: bigint
+      - volume:
+          data_type: bigint
+      - open_time:
+          data_type: timestamp without time zone
+          min_value: 1900-01-01
+      - close_time:
+          data_type: timestamp without time zone
+          min_value: 1900-01-01 
+      - cmd:
+          data_type: bigint
+          is_null: false
+          allowed_values: [0,1]
+    custom_validation:
+      - "select * from public.trades where close_time < open_time" #check if any close time earlier than open time
+  public.users:
+    validate_columns:
+      - login_hash:
+          data_type: text
+          is_null: false
+          is_unique: true
+      - enable:
+          data_type: bigint
+          is_null: false
+          allowed_values: [0,1]
+    custom_validation:
+      - "select login_hash, count(distinct server_hash) from public.users u group by 1 having count(distinct server_hash) > 1" #check if multiple servers by a user id
+
+
